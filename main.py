@@ -43,14 +43,17 @@ print(f"{sumaVazioImagem} Nulos em 'imagem_url' preenchidos com a imagem padrão
 vazioRestante = artistas.isna().sum()
 print(f"{vazioRestante}")
 
-'''
-#-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
+print(artistas["genres"].isna().sum())
 #Limpar Ruidos
 import ast
 
 try:
-    artistas["genres"] = artistas["genres"].apply(ast.literal_eval)
+    #artistas["genres"] = artistas["genres"].apply(ast.literal_eval)
+    artistas["genres"] = artistas["genres"].apply(
+        lambda x: ast.literal_eval(x) if pd.notna(x) else []
+    )
     print("Coluna 'genres' string para lista python com sucesso. ")
     print(f"Exemplo de tipo de dados em 'genres' após a conversão: {type(artistas['genres'].iloc[0])}")
 except Exception as e:
@@ -58,7 +61,31 @@ except Exception as e:
 print("")    
 
 #-------------------------------------------------------------------------------
-
+'''
 #tratar dados atipicos
+Q1 = artistas['followers'].quantile(0.75)
+Q3 = artistas['followers'].quantile(0.75)
+IQR = Q3 - Q1
 
+limite_inferior = Q1 - (1.5 * IQR)
+limite_superior = Q3 + (1.5 * IQR)
+
+print(f"Range normal de seguidores (IQR): {limite_inferior:.0f} a {limite_superior:.0f}")
+
+outliers = artistas[(artistas['followers']< limite_inferior) | (artistas['followers']> limite_superior)]
+print(f"\nEncontrados {len(outliers)} outliers na coluna 'followers'.\n")
+
+if len(outliers) >0:
+    print("Top 5 artistas mais seguidos (outliers): ")
+    print(outliers.nlargest(5, 'followers')[['name', 'followers']])
+'''
 #dados duplicados
+ID_Duplicados = artistas.duplicated(subset=['artist_id']).sum()
+
+if ID_Duplicados > 0:
+    print(f"Encontrados {ID_Duplicados} duplicados na coluna 'artist_id'")
+    artistas = artistas.drop.duplicatas(subnet=['artist_id'], keep='firts')
+else:
+    print("Não há duplicatas na coluna 'artist_id'")
+print(f"Formato após a remoção de duplicatas: {artistas.shape}\n")
+'''
