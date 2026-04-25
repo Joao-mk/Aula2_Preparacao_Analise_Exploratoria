@@ -3,7 +3,7 @@ import pandas as pd
 artistas = pd.read_csv("spotify_artists_info_edited.csv", delimiter="\t")
 
 # mostra colunas com lihnas vazias
-'''
+
 print(artistas.isna())
 
 #mostra a quantidade de linhas vazia em uma coluna expecifica, neste caso na coluna popularity
@@ -61,7 +61,7 @@ except Exception as e:
 print("")    
 
 #-------------------------------------------------------------------------------
-'''
+
 #tratar dados atipicos
 Q1 = artistas['followers'].quantile(0.75)
 Q3 = artistas['followers'].quantile(0.75)
@@ -78,7 +78,7 @@ print(f"\nEncontrados {len(outliers)} outliers na coluna 'followers'.\n")
 if len(outliers) >0:
     print("Top 5 artistas mais seguidos (outliers): ")
     print(outliers.nlargest(5, 'followers')[['name', 'followers']])
-'''
+
 #dados duplicados
 ID_Duplicados = artistas.duplicated(subset=['artist_id']).sum()
 
@@ -88,4 +88,3 @@ if ID_Duplicados > 0:
 else:
     print("Não há duplicatas na coluna 'artist_id'")
 print(f"Formato após a remoção de duplicatas: {artistas.shape}\n")
-'''
